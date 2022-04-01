@@ -11,32 +11,12 @@ import requests
 from requests import RequestException
 from ql_util import get_random_str
 from ql_api import get_envs, disable_env, post_envs, put_envs
-
-#获取最新的cfd100元链接
-def get_cfd100url():
-    APIurl = 'https://v1.114api.com/jd/cfd'
-    def get_page(url):
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62'
-            }
-        try:
-            response=requests.get(url,headers=headers)
-            if response.status_code==200:
-                return response.text
-            return None
-        except RequestException:
-            return None
-    text = get_page(APIurl)
-    text1 = json.loads(text)
-    text2 = text1['data']
-    cfd100url = text2['result']
-    return cfd100url
 # 默认配置(看不懂代码也勿动)
 cfd_start_time = -0.15
 cfd_offset_time = 0.01
 
 # 基础配置勿动
-cfd_url = get_cfd100url()
+cfd_url ="https://m.jingxi.com/jxbfd/user/ExchangeState?strZone=jxbfd&bizCode=jxbfd&source=jxbfd&dwEnv=7&_cfd_t=1648801274569&ptag=7155.9.47&dwType=2&_stk=_cfd_t%2CbizCode%2CdwEnv%2CdwType%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20220401162114570%3B1203755998579490%3B92a36%3Btk02wa64f1c4318n38qAmNT8KzlkbEqLGGIcGOU1guqhdpOTZ9zJ6LQXCbfQaazkC4a5qJo0PuJFdaXwgjC4%2Bi5PoqBu%3B5b2b10cc90e2b7bc0313e6eb958d0821a6e9e9292dfa933fccd57e86f2738e00%3B3.0%3B1648801274570&_=1648801274572&sceneval=2&g_login_type=1&callback=jsonpCBKL&g_ty=ls"
 pattern_pin = re.compile(r'pt_pin=([\w\W]*?);')
 pattern_data = re.compile(r'\(([\w\W]*?)\)')
 
