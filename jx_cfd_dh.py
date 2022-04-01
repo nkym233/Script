@@ -11,12 +11,36 @@ import requests
 from requests import RequestException
 from ql_util import get_random_str
 from ql_api import get_envs, disable_env, post_envs, put_envs
+
+#获取最新的cfd100元链接
+class JxCFD(object):
+    def __init__(self, cookie):
+        self.cookie = cookie
+        self.session = requests.session()
+        self.session.headers = {
+            "Host": "m.jingxi.com",
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+            'referer': 'https://st.jingxi.com/fortune_island/index2.html?ptag=7155.9.47&sceneval=2&sid=6f488e2778fa2db09a39f105577da07w',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62',
+            'cookie': self.cookie,
+            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br"
+        }
+
+    def get_cfd_url(self):
+        url = 'https://m.jingxi.com/jxbfd/user/ExchangeState?strZone=jxbfd&dwType=2&sceneval=2&g_login_type=1'
+        ret = self.session.get(url).json()
+        dwLvl = ret['hongbao'][0]['dwLvl']
+        pool = ret['hongbaopool']
+        new_url = f'https://m.jingxi.com/jxbfd/user/ExchangePrize?strZone=jxbfd&dwType=3&dwLvl={dwLvl}&ddwPaperMoney=100000&strPoolName={pool}&sceneval=2&g_login_type=1'
+        return new_url
 # 默认配置(看不懂代码也勿动)
 cfd_start_time = -0.15
 cfd_offset_time = 0.01
 
 # 基础配置勿动
-cfd_url ="https://m.jingxi.com/jxbfd/user/ExchangeState?strZone=jxbfd&bizCode=jxbfd&source=jxbfd&dwEnv=7&_cfd_t=1648801274569&ptag=7155.9.47&dwType=2&_stk=_cfd_t%2CbizCode%2CdwEnv%2CdwType%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20220401162114570%3B1203755998579490%3B92a36%3Btk02wa64f1c4318n38qAmNT8KzlkbEqLGGIcGOU1guqhdpOTZ9zJ6LQXCbfQaazkC4a5qJo0PuJFdaXwgjC4%2Bi5PoqBu%3B5b2b10cc90e2b7bc0313e6eb958d0821a6e9e9292dfa933fccd57e86f2738e00%3B3.0%3B1648801274570&_=1648801274572&sceneval=2&g_login_type=1&callback=jsonpCBKL&g_ty=ls"
+#cfd_url ="https://m.jingxi.com/jxbfd/user/ExchangeState?strZone=jxbfd&bizCode=jxbfd&source=jxbfd&dwEnv=7&_cfd_t=1648801274569&ptag=7155.9.47&dwType=2&_stk=_cfd_t%2CbizCode%2CdwEnv%2CdwType%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20220401162114570%3B1203755998579490%3B92a36%3Btk02wa64f1c4318n38qAmNT8KzlkbEqLGGIcGOU1guqhdpOTZ9zJ6LQXCbfQaazkC4a5qJo0PuJFdaXwgjC4%2Bi5PoqBu%3B5b2b10cc90e2b7bc0313e6eb958d0821a6e9e9292dfa933fccd57e86f2738e00%3B3.0%3B1648801274570&_=1648801274572&sceneval=2&g_login_type=1&callback=jsonpCBKL&g_ty=ls"
 pattern_pin = re.compile(r'pt_pin=([\w\W]*?);')
 pattern_data = re.compile(r'\(([\w\W]*?)\)')
 
