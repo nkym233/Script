@@ -35,26 +35,9 @@ class JxCFD(object):
         pool = ret['hongbaopool']
         new_url = f'https://m.jingxi.com/jxbfd/user/ExchangePrize?strZone=jxbfd&dwType=3&dwLvl={dwLvl}&ddwPaperMoney=100000&strPoolName={pool}&sceneval=2&g_login_type=1'
         return new_url
-# 默认配置(看不懂代码也勿动)
-cfd_start_time = -0.15
-cfd_offset_time = 0.01
 
-# 基础配置勿动
-#cfd_url ="https://m.jingxi.com/jxbfd/user/ExchangeState?strZone=jxbfd&bizCode=jxbfd&source=jxbfd&dwEnv=7&_cfd_t=1648801274569&ptag=7155.9.47&dwType=2&_stk=_cfd_t%2CbizCode%2CdwEnv%2CdwType%2Cptag%2Csource%2CstrZone&_ste=1&h5st=20220401162114570%3B1203755998579490%3B92a36%3Btk02wa64f1c4318n38qAmNT8KzlkbEqLGGIcGOU1guqhdpOTZ9zJ6LQXCbfQaazkC4a5qJo0PuJFdaXwgjC4%2Bi5PoqBu%3B5b2b10cc90e2b7bc0313e6eb958d0821a6e9e9292dfa933fccd57e86f2738e00%3B3.0%3B1648801274570&_=1648801274572&sceneval=2&g_login_type=1&callback=jsonpCBKL&g_ty=ls"
 pattern_pin = re.compile(r'pt_pin=([\w\W]*?);')
 pattern_data = re.compile(r'\(([\w\W]*?)\)')
-
-
-# 获取下个整点和时间戳
-def get_date() -> str and int:
-    # 当前时间
-    now_time = datetime.datetime.now()
-    # 把根据当前时间计算下一个整点时间戳
-    integer_time = (now_time + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
-    time_array = time.strptime(integer_time, "%Y-%m-%d %H:%M:%S")
-    time_stamp = int(time.mktime(time_array))
-    return integer_time, time_stamp
-
 
 # 获取要执行兑换的cookie
 def get_cookie():
@@ -74,6 +57,30 @@ def get_cookie():
     else:
         print('共配置{}条CK,请添加环境变量,或查看环境变量状态'.format(len(ck_list)))
     return pin, cookie
+
+# 默认配置(看不懂代码也勿动)
+cfd_start_time = -0.15
+cfd_offset_time = 0.01
+
+# 基础配置勿动
+# 获取cookie等参数
+u_pin, u_cookie = get_cookie()
+cfd_url=JxCFD(u_cookie['value']).get_cfd_url()
+
+
+
+# 获取下个整点和时间戳
+def get_date() -> str and int:
+    # 当前时间
+    now_time = datetime.datetime.now()
+    # 把根据当前时间计算下一个整点时间戳
+    integer_time = (now_time + datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
+    time_array = time.strptime(integer_time, "%Y-%m-%d %H:%M:%S")
+    time_stamp = int(time.mktime(time_array))
+    return integer_time, time_stamp
+
+
+
 
 
 # 获取配置参数
@@ -102,12 +109,8 @@ def cfd_qq(def_start_time):
     # 记录请求时间,发送请求
     t1 = time.time()
     d1 = datetime.datetime.now().strftime("%H:%M:%S.%f")
-    res = requests.get(cfd_url, headers=headers)
+    data = requests.get(cfd_url, headers=headers).json()
     t2 = time.time()
-    # 正则对结果进行提取
-    re_list = pattern_data.search(res.text)
-    # 进行json转换
-    data = json.loads(re_list.group(1))
     msg = data['sErrMsg']
     # 根据返回值判断
     if data['iRet'] == 0:
@@ -140,10 +143,6 @@ def cfd_qq(def_start_time):
 if __name__ == '__main__':
     print("- 程序初始化")
     print("脚本进入时间[{}]".format(datetime.datetime.now().strftime("%H:%M:%S.%f")))
-    # 从环境变量获取url,不存在则从配置获取
-    u_url = os.getenv("CFD_URL", cfd_url)
-    # 获取cookie等参数
-    u_pin, u_cookie = get_cookie()
     # 获取时间等参数
     u_start_time, u_start_dist = get_config()
     # 预计下个整点为
