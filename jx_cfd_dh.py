@@ -29,11 +29,7 @@ class JxCFD(object):
         }
 
     def get_cfd_url(self):
-        url = 'https://m.jingxi.com/jxbfd/user/ExchangeState?strZone=jxbfd&dwType=2&sceneval=2&g_login_type=1'
-        ret = self.session.get(url).json()
-        dwLvl = ret['hongbao'][0]['dwLvl']
-        pool = ret['hongbaopool']
-        new_url = f'https://m.jingxi.com/jxbfd/user/ExchangePrize?strZone=jxbfd&dwType=3&dwLvl={dwLvl}&ddwPaperMoney=100000&strPoolName={pool}&sceneval=2&g_login_type=1'
+        new_url = 'https://m.jingxi.com/jxbfd/user/ExchangePrize?strZone=jxbfd&bizCode=jxbfd&source=jxbfd&dwEnv=7&_cfd_t=1652155099587&dwType=3&dwLvl=11&ddwPaperMoney=100000&strPoolName=jxcfd2_exchange_hb_202204&sceneval=2&g_login_type=1'
         return new_url
 
 pattern_pin = re.compile(r'pt_pin=([\w\W]*?);')
